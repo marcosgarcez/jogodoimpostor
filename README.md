@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🕵️ Jogo do Mentiroso (Web App)
 
-## Getting Started
+> Um aplicativo web simples, leve e offline para gerenciar partidas do jogo social "O Mentiroso" (estilo Spyfall).
 
-First, run the development server:
+![Badge](https://img.shields.io/badge/Status-Funcional-brightgreen)
+![Badge](https://img.shields.io/badge/Linguagem-HTML%20%7C%20JS-blue)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📖 Sobre o Projeto
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Este projeto é uma ferramenta para facilitar a brincadeira do **Mentiroso** em festas e reuniões com amigos. Em vez de usar papel e caneta ou depender de um moderador que não joga, o app sorteia e distribui os papéis secretamente através de um único celular que passa de mão em mão.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+O objetivo é simples: **Descobrir quem é o intruso.**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Funcionalidades
 
-## Learn More
+* **Dois Modos de Jogo:**
+    * 🎲 **Sorteio Automático:** Escolha uma categoria (Lugares, Comida, Profissões, etc.) e o app escolhe a palavra. O moderador também joga!
+    * ✍️ **Modo Manual:** O moderador digita uma palavra específica (ótimo para piadas internas) e o app distribui.
+* **Interface Discreta:** Inputs de senha e telas de transição para garantir que ninguém veja a função do outro.
+* **Sem Instalação:** Funciona direto no navegador do celular.
+* **Totalmente Offline:** Após carregar a página, não consome dados.
 
-To learn more about Next.js, take a look at the following resources:
+## 🎮 Como Jogar
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  Reúna os amigos (mínimo de 3 pessoas).
+2.  Abra o app no celular.
+3.  Escolha o modo (Sorteio ou Manual) e o número de jogadores.
+4.  O app dirá "Jogador 1". Passe o celular para essa pessoa.
+5.  O jogador clica em "Ver Função", memoriza a palavra (ou descobre que é o Mentiroso) e clica em "Esconder".
+6.  O celular é passado para o próximo até todos saberem suas funções.
+7.  **A Rodada:** Todos fazem perguntas uns aos outros sobre a palavra secreta. O Mentiroso deve mentir e fingir que sabe do que estão falando.
+8.  No final, o grupo vota em quem acham que é o Mentiroso!
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🛠️ Como Usar (Instalação)
 
-## Deploy on Vercel
+Não é necessário instalar nada. Você tem duas opções:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Opção 1: Rodar Online (Recomendado)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+### Opção 2: Rodar Localmente
+
+

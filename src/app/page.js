@@ -1,65 +1,248 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+
+// --- BANCO DE DADOS ---
+const DATABASE = {
+  lugares: ["Praia", "Cinema", "Hospital", "Escola", "Cemitério", "Shopping", "Academia", "Aeroporto", "Supermercado", "Igreja", "Museu", "Zoológico"],
+  comida: ["Pizza", "Sushi", "Hambúrguer", "Churrasco", "Chocolate", "Sorvete", "Salada", "Macarrão", "Pipoca", "Sopa", "Bolo", "Ovo Frito"],
+  objetos: ["Celular", "Guarda-Chuva", "Relógio", "Escova de Dentes", "Controle Remoto", "Caneta", "Sapato", "Óculos", "Chave", "Travesseiro", "Computador"],
+  animais: ["Cachorro", "Gato", "Elefante", "Tubarão", "Formiga", "Leão", "Pinguim", "Girafa", "Papagaio", "Cobra", "Jacaré", "Macaco"],
+  profissoes: ["Médico", "Professor", "Policial", "Bombeiro", "Palhaço", "Astronauta", "Cozinheiro", "Mágico", "Advogado", "Motorista", "Pintor"]
+};
 
 export default function Home() {
+  // --- ESTADOS DO JOGO ---
+  // setup, wait, reveal, end
+  const [gameState, setGameState] = useState("setup");
+  
+  // Configurações
+  const [mode, setMode] = useState("random"); // random ou manual
+  const [totalPlayers, setTotalPlayers] = useState(4);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [manualWord, setManualWord] = useState("");
+  
+  // Dados da Partida
+  const [playersData, setPlayersData] = useState([]);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+
+  // Busca de dados no dicionario - se categoria vazia retorna aleatório
+  async function getPalavra(category) {
+    const url = category!='all' ? `./api/dic?category=${category}` : './api/dic';
+    const res = await fetch(url);
+    if(!res.ok || res.status != 200) {
+      throw new Error('Falha ao buscar dados!')
+    }
+    const json = await res.json();
+    console.log(res.status);
+    return json;
+  }
+
+  // --- LÓGICA DO JOGO ---
+
+  const startGame = () => {
+    let word = "";
+    let categoryName = "";
+
+    // Validação Básica
+    if (totalPlayers < 3) return alert("Mínimo de 3 jogadores!");
+
+    if (mode === "manual") {
+      if (!manualWord.trim()) return alert("Digite uma palavra secreta!");
+      word = manualWord.trim();
+      categoryName = "Manual";
+    } else {
+      // Sorteio
+      word = getPalavra(selectedCategory);
+      categoryName = selectedCategory=='all' ? " Misturado" : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
+    }
+
+    // Gerar papéis
+    const newPlayersData = [];
+    const liarIndex = Math.floor(Math.random() * totalPlayers);
+
+    for (let i = 0; i < totalPlayers; i++) {
+      if (i === liarIndex) {
+        newPlayersData.push({ type: "LIAR", text: "VOCÊ É O MENTIROSO!", category: categoryName });
+      } else {
+        newPlayersData.push({ type: "PLAYER", text: word, category: categoryName });
+      }
+    }
+
+    setPlayersData(newPlayersData);
+    setCurrentPlayerIndex(0);
+    setManualWord(""); // Limpar segurança
+    setGameState("wait");
+  };
+
+  const nextPlayer = () => {
+    if (currentPlayerIndex + 1 < playersData.length) {
+      setCurrentPlayerIndex((prev) => prev + 1);
+      setGameState("wait");
+    } else {
+      setGameState("end");
+    }
+  };
+
+  const resetGame = () => {
+    setGameState("setup");
+    setPlayersData([]);
+    setCurrentPlayerIndex(0);
+  };
+
+  // --- RENDERIZAÇÃO ---
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen bg-zinc-900 text-white flex flex-col items-center justify-center p-4 font-sans">
+      <div className="max-w-md w-full bg-zinc-800 p-6 rounded-2xl shadow-xl border border-zinc-700">
+        <h1 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+          🕵️ Jogo do Mentiroso
+        </h1>
+
+        {/* TELA 1: SETUP */}
+        {gameState === "setup" && (
+          <div className="space-y-6">
+            {/* Abas */}
+            <div className="flex bg-zinc-900 rounded-lg p-1">
+              <button
+                onClick={() => setMode("random")}
+                className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${
+                  mode === "random" ? "bg-purple-600 text-white shadow-lg" : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                🎲 Sorteio
+              </button>
+              <button
+                onClick={() => setMode("manual")}
+                className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${
+                  mode === "manual" ? "bg-purple-600 text-white shadow-lg" : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                ✍️ Manual
+              </button>
+            </div>
+
+            {/* Inputs do Sorteio */}
+            {mode === "random" && (
+              <div className="space-y-2">
+                <label className="text-zinc-400 text-sm">Categoria</label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-purple-500 transition"
+                >
+                  <option value="all">🔀 Misturado</option>
+                  <option value="lugares">✈️ Lugares</option>
+                  <option value="comida">🍕 Comida</option>
+                  <option value="objetos">💡 Objetos</option>
+                  <option value="animais">🐶 Animais</option>
+                  <option value="profissoes">💼 Profissões</option>
+                </select>
+              </div>
+            )}
+
+            {/* Input Manual */}
+            {mode === "manual" && (
+              <div className="space-y-2">
+                <label className="text-zinc-400 text-sm">Palavra Secreta</label>
+                <input
+                  type="password"
+                  placeholder="Ex: Girafa"
+                  value={manualWord}
+                  onChange={(e) => setManualWord(e.target.value)}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-center focus:outline-none focus:border-purple-500 transition"
+                />
+              </div>
+            )}
+
+            {/* Número de Jogadores */}
+            <div className="space-y-2">
+              <label className="text-zinc-400 text-sm">Jogadores: <span className="text-white font-bold">{totalPlayers}</span></label>
+              <input
+                type="range"
+                min="3"
+                max="20"
+                value={totalPlayers}
+                onChange={(e) => setTotalPlayers(Number(e.target.value))}
+                className="w-full accent-purple-500 h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer"
+              />
+            </div>
+
+            <button
+              onClick={startGame}
+              className="w-full bg-teal-500 hover:bg-teal-400 text-zinc-900 font-bold py-4 rounded-full text-lg shadow-lg transform active:scale-95 transition-all"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              Iniciar Jogo
+            </button>
+          </div>
+        )}
+
+        {/* TELA 2: ESPERA (PASSAR CELULAR) */}
+        {gameState === "wait" && (
+          <div className="text-center py-10 space-y-6">
+            <h2 className="text-2xl font-bold text-zinc-300">Jogador {currentPlayerIndex + 1}</h2>
+            <div className="text-6xl">📱</div>
+            <p className="text-zinc-400">Pegue o celular e garanta que ninguém está olhando.</p>
+            <button
+              onClick={() => setGameState("reveal")}
+              className="w-full bg-orange-500 hover:bg-orange-400 text-white font-bold py-4 rounded-full text-lg shadow-lg transform active:scale-95 transition-all"
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              Ver Minha Função
+            </button>
+          </div>
+        )}
+
+        {/* TELA 3: REVELAÇÃO */}
+        {gameState === "reveal" && (
+          <div className="text-center py-6 space-y-6 animate-in fade-in zoom-in duration-300">
+            <span className="inline-block px-3 py-1 bg-zinc-700 rounded-full text-xs text-zinc-400 uppercase tracking-wider">
+              Categoria: {playersData[currentPlayerIndex]?.category}
+            </span>
+            
+            <div className={`p-8 rounded-xl border-2 border-dashed ${
+              playersData[currentPlayerIndex]?.type === "LIAR" 
+                ? "border-red-500 bg-red-500/10" 
+                : "border-teal-500 bg-teal-500/10"
+            }`}>
+              <h3 className={`text-3xl font-extrabold ${
+                playersData[currentPlayerIndex]?.type === "LIAR" ? "text-red-400" : "text-white"
+              }`}>
+                {playersData[currentPlayerIndex]?.text}
+              </h3>
+            </div>
+
+            <p className="text-zinc-400 italic text-sm">
+              {playersData[currentPlayerIndex]?.type === "LIAR"
+                ? "Engane a todos! Tente descobrir a palavra."
+                : "Essa é a palavra secreta. Descubra o mentiroso."}
+            </p>
+
+            <button
+              onClick={nextPlayer}
+              className="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-4 rounded-full text-lg shadow-lg transform active:scale-95 transition-all"
+            >
+              Esconder e Passar
+            </button>
+          </div>
+        )}
+
+        {/* TELA 4: FIM */}
+        {gameState === "end" && (
+          <div className="text-center py-10 space-y-6">
+            <div className="text-6xl">✅</div>
+            <h2 className="text-2xl font-bold text-teal-400">Sorteio Finalizado!</h2>
+            <p className="text-zinc-400">
+              Todos já sabem suas funções. O jogo começou! Façam perguntas uns aos outros.
+            </p>
+            <button
+              onClick={resetGame}
+              className="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-4 rounded-full text-lg shadow-lg transform active:scale-95 transition-all"
+            >
+              Nova Rodada
+            </button>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
