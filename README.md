@@ -66,13 +66,6 @@ Se quiser rodar este projeto no seu computador:
 
 4.  Abra [http://localhost:3000](http://localhost:3000) no navegador.
 
-## 📡 Estrutura da API
-
-O projeto conta com um endpoint interno (Next.js API Routes) para buscar palavras:
-
-* **Rota:** `/api/generate` (exemplo)
-* **Lógica:** Recebe a categoria desejada. Se for "misturado", o servidor escolhe uma categoria aleatória do banco de dados e retorna uma palavra única, garantindo que a lógica de negócio fique no servidor.
-
 ## 📝 Licença
 
 Este projeto é de código aberto e livre para uso pessoal. Sinta-se à vontade para contribuir!
