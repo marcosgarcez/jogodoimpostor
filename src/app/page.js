@@ -2,15 +2,6 @@
 
 import { useState } from "react";
 
-// --- BANCO DE DADOS ---
-const DATABASE = {
-  lugares: ["Praia", "Cinema", "Hospital", "Escola", "Cemitério", "Shopping", "Academia", "Aeroporto", "Supermercado", "Igreja", "Museu", "Zoológico"],
-  comida: ["Pizza", "Sushi", "Hambúrguer", "Churrasco", "Chocolate", "Sorvete", "Salada", "Macarrão", "Pipoca", "Sopa", "Bolo", "Ovo Frito"],
-  objetos: ["Celular", "Guarda-Chuva", "Relógio", "Escova de Dentes", "Controle Remoto", "Caneta", "Sapato", "Óculos", "Chave", "Travesseiro", "Computador"],
-  animais: ["Cachorro", "Gato", "Elefante", "Tubarão", "Formiga", "Leão", "Pinguim", "Girafa", "Papagaio", "Cobra", "Jacaré", "Macaco"],
-  profissoes: ["Médico", "Professor", "Policial", "Bombeiro", "Palhaço", "Astronauta", "Cozinheiro", "Mágico", "Advogado", "Motorista", "Pintor"]
-};
-
 export default function Home() {
   // --- ESTADOS DO JOGO ---
   // setup, wait, reveal, end
@@ -96,7 +87,7 @@ export default function Home() {
     <main className="min-h-screen bg-zinc-900 text-white flex flex-col items-center justify-center p-4 font-sans">
       <div className="max-w-md w-full bg-zinc-800 p-6 rounded-2xl shadow-xl border border-zinc-700">
         <h1 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-          🕵️ Jogo do Mentiroso
+          🕵️ Jogo do Impostor
         </h1>
 
         {/* TELA 1: SETUP */}
